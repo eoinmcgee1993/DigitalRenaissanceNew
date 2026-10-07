@@ -213,6 +213,27 @@ section { padding: 80px; }
 .s-body p { margin-bottom: 16px; }
 .s-body p:last-child { margin-bottom: 0; }
 
+
+/* ── WEBSITE RESCUE ── */
+.rescue{background:linear-gradient(135deg,#101010,#0b0b0b);padding:72px 80px;border-top:1px solid rgba(201,168,76,.12);border-bottom:1px solid rgba(201,168,76,.12)}
+.rescue-inner{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1.35fr .65fr;gap:56px;align-items:center}
+.rescue-kicker{font-family:"Space Mono",monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.rescue-title{font-family:"Cormorant Garamond",serif;font-size:clamp(34px,4vw,58px);line-height:1;letter-spacing:-1px;margin-bottom:16px}
+.rescue-title em{font-style:italic;color:var(--gold-l)}
+.rescue-copy{font-size:14px;font-weight:300;line-height:1.85;color:var(--muted);max-width:680px}
+.rescue-copy strong{color:var(--white);font-weight:500}
+.rescue-list{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;margin:24px 0 28px;list-style:none}
+.rescue-list li{font-size:12px;color:rgba(240,240,240,.68);display:flex;gap:8px;line-height:1.5}
+.rescue-list li::before{content:"✓";color:var(--gold);font-family:"Space Mono",monospace;font-size:10px}
+.rescue-card{background:var(--card);border:1px solid rgba(201,168,76,.18);padding:30px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.rescue-price{font-family:"Cormorant Garamond",serif;font-size:56px;font-weight:700;color:var(--gold);line-height:1}
+.rescue-flat{font-family:"Space Mono",monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--grey);margin:6px 0 20px}
+.rescue-card p{font-size:12px;line-height:1.7;color:var(--muted);margin-bottom:20px}
+.rescue-btn{display:inline-flex;justify-content:center;width:100%;background:var(--gold);color:var(--black);font-family:"Space Mono",monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:700;text-decoration:none;padding:14px 18px;transition:background .2s}
+.rescue-btn:hover{background:var(--gold-l)}
+.rescue-note{font-family:"Space Mono",monospace;font-size:7px;letter-spacing:1.5px;color:#555;margin-top:12px}
+@media(max-width:960px){.rescue{padding:56px 24px}.rescue-inner{grid-template-columns:1fr;gap:34px}.rescue-list{grid-template-columns:1fr}}
+
 /* ── MISSION ── */
 .mission { background: var(--deep); }
 .mission-wrap { max-width: 680px; margin: 0 auto; text-align: center; }
@@ -613,16 +634,16 @@ footer { padding: 48px 80px; border-top: 1px solid rgba(201,168,76,.1); display:
   <div class="hero-content">
     <div class="h-eyebrow">Founder</div>
     <h1 class="h-name">Eoin<br>McGee</h1>
-    <p class="h-headline">AI systems, digital products and market intelligence — built for independent operators.</p>
+    <p class="h-headline">Digital systems, products and leverage — built for independent operators.</p>
     <div class="h-proof">
       <span class="h-proof-item">✦ 30+ digital products live</span>
       <span class="h-proof-item">✦ $M+ revenue unlocked for clients</span>
       <span class="h-proof-item">✦ Active signal group</span>
     </div>
-    <p class="h-copy">The Digital Renaissance is for businesses and individuals who are done guessing. Whether you're scaling a brand or building income from scratch — this is about one thing. <strong>Clear systems that make money, remove noise, and actually last.</strong></p>
+    <p class="h-copy">I build the systems behind businesses that are sick of doing everything manually. <strong>Websites, digital products, automation and growth infrastructure built around outcomes.</strong></p>
     <p class="h-tags">Systems Architect &nbsp;&middot;&nbsp; Wizard of Leverage &nbsp;&middot;&nbsp; Anti Bullshit</p>
     <div class="h-btns">
-      <a href="#paths" class="btn btn-gold">Enter the Renaissance</a>
+      <a href="#rescue" class="btn btn-gold">$100 Website Rescue</a>
       <a href="#audit" class="btn btn-ghost">Free Business Audit</a>
     </div>
     <p class="h-note">No fluff. No shortcuts. Just what works.</p>
@@ -636,6 +657,30 @@ footer { padding: 48px 80px; border-top: 1px solid rgba(201,168,76,.1); display:
 
 <div class="divider"></div>
 
+<!-- WEBSITE RESCUE -->
+<section id="rescue" class="rescue">
+  <div class="rescue-inner">
+    <div>
+      <div class="rescue-kicker">Fastest way to work together</div>
+      <h2 class="rescue-title">Your website probably isn't broken.<br><em>It's just leaving money on the table.</em></h2>
+      <p class="rescue-copy">I'll go through your website properly and identify the biggest problems costing you attention, trust or conversions. Then I'll fix the obvious quick wins in one focused sprint.</p>
+      <ul class="rescue-list">
+        <li>Desktop + mobile review</li><li>UX and navigation check</li>
+        <li>Copy and CTA improvements</li><li>Conversion leaks identified</li>
+        <li>Broken or awkward elements</li><li>Quick-win fixes</li>
+      </ul>
+    </div>
+    <div class="rescue-card">
+      <div class="rescue-price">$100</div>
+      <div class="rescue-flat">One focused sprint</div>
+      <p>No retainer. No bloated agency contract. No 47-page strategy document. Just a proper review, concrete fixes and a clear action list.</p>
+      <a href="#audit" class="rescue-btn">Start My Website Rescue →</a>
+      <div class="rescue-note">Limited sprint slots · Direct response</div>
+    </div>
+  </div>
+</section>
+
+
 <!-- MISSION -->
 <section id="mission" class="mission">
   <div class="mission-wrap">
@@ -643,7 +688,7 @@ footer { padding: 48px 80px; border-top: 1px solid rgba(201,168,76,.1); display:
     <div class="m-text"><p>Most people aren't failing because they lack effort.</p><p>They're failing because they're <strong>buried in noise.</strong></p></div>
     <div class="m-text" style="font-size:clamp(14px,1.5vw,18px);color:rgba(240,240,240,.5);"><p>Too many strategies. Too many opinions. No real system holding anything together.</p><p>That's true for the individual trying to make their first real income… and for the business stuck plateauing, scaling without structure, or burning time on the wrong things.</p></div>
     <div class="m-rule"></div>
-    <div class="m-text"><p>The Digital Renaissance exists to change that.</p><p>This is about stripping everything back to <em>what actually works</em> — building systems that create leverage, generate income, and remove guesswork. For individuals and for businesses.</p></div>
+    <div class="m-text"><p>The Digital Renaissance exists to change that.</p><p>This is about stripping everything back to <em>what actually works</em> — finding the bottleneck, building the system and creating leverage.</p></div>
     <div class="m-text" style="font-size:clamp(14px,1.5vw,18px);color:rgba(240,240,240,.45);"><p>No hype. No recycled advice. No pretending. Just clear thinking, structured execution, and results you can build on.</p></div>
     <div class="m-rule"></div>
     <div class="m-close">Because once you understand systems… you stop chasing outcomes, and start creating them.</div>
@@ -776,7 +821,7 @@ footer { padding: 48px 80px; border-top: 1px solid rgba(201,168,76,.1); display:
       <div class="prod-price"><sup>$</sup>7</div>
       <div class="prod-name">Starter Pack</div>
       <div class="prod-desc">Your first online income system. 300+ ideas, 10 guides and workflows to get you moving.</div>
-      <ul class="prod-list"><li>300+ digital business ideas</li><li>10 comprehensive guides</li><li>AI-powered workflows</li><li>Instant download</li></ul>
+      <ul class="prod-list"><li>300+ digital business ideas</li><li>10 comprehensive guides</li><li>Ready-to-use workflows</li><li>Instant download</li></ul>
       <a href="https://digitalrena1ssance.gumroad.com" target="_blank" class="prod-link">Get Started →</a>
     </div>
     <div class="prod-card featured">
@@ -806,9 +851,9 @@ footer { padding: 48px 80px; border-top: 1px solid rgba(201,168,76,.1); display:
 <section id="audit" class="audit">
   <div class="audit-inner">
     <div class="s-eyebrow">Free Audit</div>
-    <h2 class="s-title">Claim Your Free<br><em>Business Audit</em></h2>
+    <h2 class="s-title">Show Me Where You're<br><em>Leaving Money on the Table</em></h2>
     <div class="s-body audit-inner" style="margin:0 auto 36px;text-align:left;">
-      <p>I'll review your business or digital presence and show you <strong>exactly where you're leaving money on the table</strong> — and how to fix it with clean systems.</p>
+      <p>Send me your website and a few details. I'll review your digital presence and show you <strong>the biggest problems affecting visibility, conversion or workflow</strong> — plus the highest-impact moves I'd make first.</p>
       <p>No pitch. No fluff. Direct intelligence you can act on today.</p>
     </div>
     <div class="audit-3">
@@ -844,7 +889,7 @@ footer { padding: 48px 80px; border-top: 1px solid rgba(201,168,76,.1); display:
         </select>
       </div>
       <div class="f-group full"><label class="f-label">Biggest Challenge</label><textarea class="f-textarea" name="challenge" placeholder="What's costing you the most right now — time, money, focus?" required></textarea></div>
-      <button type="submit" class="f-submit">→ Claim My Free Audit</button>
+      <button type="submit" class="f-submit">→ Find My Biggest Leak</button>
       <p class="f-note">No pitch. No spam. Response within 48 hours.</p>
     </form>
   </div>
