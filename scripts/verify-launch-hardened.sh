@@ -2,6 +2,7 @@
 set -euo pipefail
 
 REPO="eoinmcgee1993/DigitalRenaissanceNew"
+WORKFLOW_FILE=".github/workflows/deploy.yml"
 WORKFLOW_NAME="deploy.yml"
 EXPECTED_SLUG="claude-operator-blueprint"
 EXPECTED_PRICE_CENTS=4700
@@ -78,13 +79,14 @@ MATCH_COUNT="$(printf '%s' "$MATCHED_PRODUCTS" | jq 'length')"
 
 PRODUCT="$(printf '%s' "$MATCHED_PRODUCTS" | jq -c '.[0]')"
 LIVE_PRICE="$(printf '%s' "$PRODUCT" | jq -r '.price // empty')"
-LIVE_CURRENCY="$(printf '%s' "$PRODUCT" | jq -r '.price_currency_type // "unknown" | ascii_upcase')"
+LIVE_CURRENCY="$(printf '%s' "$PRODUCT" | jq -r '.currency // empty | ascii_upcase')"
 PUBLISHED_STATE="$(printf '%s' "$PRODUCT" | jq -r '.published // empty')"
 DELETED_STATE="$(printf '%s' "$PRODUCT" | jq -r '.deleted // false')"
 
 [[ "$LIVE_PRICE" =~ ^[0-9]+$ ]] || fail "Product price is missing or is not an integer."
 [ "$PUBLISHED_STATE" = "true" ] || [ "$PUBLISHED_STATE" = "false" ] || fail "Product published field is not a boolean."
 [ "$LIVE_PRICE" -eq "$EXPECTED_PRICE_CENTS" ] || fail "Expected 4700 cents; API returned $LIVE_PRICE."
+[ -n "$LIVE_CURRENCY" ] || fail "Product currency field is missing from Gumroad API response."
 [ "$LIVE_CURRENCY" = "USD" ] || fail "Expected USD price currency; API returned $LIVE_CURRENCY."
 [ "$PUBLISHED_STATE" = "true" ] || fail "Product is not published."
 [ "$DELETED_STATE" != "true" ] || fail "Product is marked deleted."
