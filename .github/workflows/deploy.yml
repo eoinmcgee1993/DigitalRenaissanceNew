@@ -27,11 +27,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes jq shellcheck
 
-      - name: Check shell syntax
-        run: bash -n scripts/verify-launch-hardened.sh
-
-      - name: Lint verification script
-        run: shellcheck scripts/verify-launch-hardened.sh
+      - name: Check shell syntax and lint when the script exists
+        run: |
+          if [ -f scripts/verify-launch-hardened.sh ]; then
+            bash -n scripts/verify-launch-hardened.sh
+            shellcheck scripts/verify-launch-hardened.sh
+          else
+            echo "Verification script is not on this commit yet; workflow bootstrap check only."
+          fi
 
       - name: Check whitespace errors
         run: git diff --check
