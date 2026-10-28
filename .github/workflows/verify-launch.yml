@@ -1,0 +1,38 @@
+name: Authenticated Gumroad Launch Gate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  verify-launch:
+    name: Run authenticated four-gate launch verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout selected commit
+        uses: actions/checkout@v4
+
+      - name: Confirm required secret is configured
+        env:
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$GUMROAD_ACCESS_TOKEN" ]; then
+            echo "::error::Repository secret GUMROAD_ACCESS_TOKEN is missing."
+            exit 1
+          fi
+
+      - name: Install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes jq
+
+      - name: Run four-gate launch verification
+        env:
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x scripts/verify-launch-hardened.sh
+          ./scripts/verify-launch-hardened.sh
