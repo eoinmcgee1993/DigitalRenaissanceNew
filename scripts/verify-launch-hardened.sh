@@ -28,6 +28,9 @@ printf '[1/4] Verifying workflow %s against local HEAD...\n' "$WORKFLOW_NAME"
 TARGET_SHA="$(git rev-parse HEAD 2>/dev/null)" || fail "Unable to resolve local git HEAD SHA."
 printf 'Target Commit SHA: %s\n' "$TARGET_SHA"
 
+gh api "repos/$REPO/contents/$WORKFLOW_FILE" --jq '.name' >/dev/null \\
+  || fail "Workflow file $WORKFLOW_FILE does not exist on the repository default branch or is not accessible."
+
 WORKFLOW_RUNS="$(gh run list --repo "$REPO" --workflow "$WORKFLOW_NAME" --limit 100 --json status,conclusion,headSha,url,databaseId,createdAt)" \
   || fail "Could not query GitHub Actions. Check gh authentication and repository access."
 MATCHED_RUNS="$(printf '%s' "$WORKFLOW_RUNS" | jq -c --arg sha "$TARGET_SHA" '[.[] | select(.headSha == $sha)] | sort_by(.createdAt) | reverse')"
