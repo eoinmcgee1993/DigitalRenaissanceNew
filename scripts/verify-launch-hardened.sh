@@ -81,7 +81,7 @@ MATCH_COUNT="$(printf '%s' "$MATCHED_PRODUCTS" | jq 'length')"
 
 PRODUCT="$(printf '%s' "$MATCHED_PRODUCTS" | jq -c '.[0]')"
 LIVE_PRICE="$(printf '%s' "$PRODUCT" | jq -r '.price // empty')"
-LIVE_CURRENCY="$(printf '%s' "$PRODUCT" | jq -r '.currency // empty | ascii_upcase')"
+LIVE_CURRENCY="$(printf '%s' "$PRODUCT" | jq -r '.price_currency_type // empty | ascii_upcase')"
 PUBLISHED_STATE="$(printf '%s' "$PRODUCT" | jq -r '.published // empty')"
 DELETED_STATE="$(printf '%s' "$PRODUCT" | jq -r '.deleted // false')"
 
