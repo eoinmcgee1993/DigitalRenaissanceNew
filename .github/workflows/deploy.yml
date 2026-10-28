@@ -1,0 +1,37 @@
+name: Deployment Pipeline Validation
+
+# This workflow validates the repository's release-verification tooling.
+# It does not deploy the site or publish/change Gumroad products.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate launch verification tooling
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up jq and shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes jq shellcheck
+
+      - name: Check shell syntax
+        run: bash -n scripts/verify-launch-hardened.sh
+
+      - name: Lint verification script
+        run: shellcheck scripts/verify-launch-hardened.sh
+
+      - name: Check whitespace errors
+        run: git diff --check
