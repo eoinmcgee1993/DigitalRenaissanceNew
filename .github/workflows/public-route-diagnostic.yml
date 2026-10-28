@@ -1,0 +1,35 @@
+name: Public Route Diagnostic
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-public-routes:
+    name: Check public Gumroad routes (non-authoritative)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check profile URL
+        id: profile
+        shell: bash
+        run: |
+          status="$(curl --location --silent --show-error --output /dev/null --write-out '%{http_code}' --max-time 30 'https://digitalrena1ssance.gumroad.com')"
+          echo "HTTP status: $status"
+          test "$status" = "200"
+
+      - name: Check product URL
+        id: product
+        shell: bash
+        run: |
+          status="$(curl --location --silent --show-error --output /dev/null --write-out '%{http_code}' --max-time 30 'https://digitalrena1ssance.gumroad.com/l/claude-operator-blueprint')"
+          echo "HTTP status: $status"
+          test "$status" = "200"
+
+      - name: Scope limitation
+        if: always()
+        run: |
+          echo "This workflow checks public HTTP routes only."
+          echo "It does not verify Gumroad API authentication, product price/currency, or publication state."
+          echo "It does not satisfy the four-gate launch requirement or unlock Mode 05."
