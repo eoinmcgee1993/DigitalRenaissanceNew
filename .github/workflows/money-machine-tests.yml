@@ -1,0 +1,59 @@
+name: Money Machine Browser Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "money-machine/**"
+      - "site/money-machine/**"
+      - ".github/workflows/money-machine-tests.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "money-machine/**"
+      - "site/money-machine/**"
+      - ".github/workflows/money-machine-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-tests:
+    name: Playwright / Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: money-machine
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: money-machine/package-lock.json
+
+      - name: Install project and test dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run unit and browser tests
+        run: npm run test:all
+        env:
+          CI: "true"
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: money-machine-playwright-report
+          path: |
+            money-machine/playwright-report/
+            money-machine/test-results/
+          retention-days: 14
