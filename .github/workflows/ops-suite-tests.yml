@@ -1,0 +1,29 @@
+name: Ops Suite Tests
+
+on:
+  pull_request:
+    paths:
+      - "ops-suite/**"
+      - "site/ops-suite/**"
+      - ".github/workflows/ops-suite-tests.yml"
+  push:
+    branches: [main]
+    paths:
+      - "ops-suite/**"
+      - "site/ops-suite/**"
+      - ".github/workflows/ops-suite-tests.yml"
+
+jobs:
+  dashboard:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ops-suite
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
