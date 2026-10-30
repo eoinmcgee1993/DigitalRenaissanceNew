@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Renaissance // Ops Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .metric-card { transition: all 0.3s ease; }
+        .metric-card:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-10 border-b border-slate-700 pb-6 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-bold text-emerald-400 tracking-tight">Digital Renaissance</h1>
+                <p class="text-slate-400 mt-1">Ops Suite // Minimal Core</p>
+            </div>
+            <div class="text-sm text-slate-500 text-right">
+                <p>Status: <span class="text-emerald-400 font-semibold" id="system-status">Simulated</span></p>
+                <p>Note: Metrics are currently simulated UI prototypes.</p>
+            </div>
+        </header>
+        <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="metric-card bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <h2 class="text-sm text-slate-400 uppercase tracking-wider mb-2">Simulated ROI</h2>
+                <div class="text-4xl font-light text-white" id="metric-roi">$0.00</div>
+                <div class="text-xs text-emerald-400 mt-2">↑ 12% vs last week</div>
+            </div>
+            <div class="metric-card bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <h2 class="text-sm text-slate-400 uppercase tracking-wider mb-2">Avg Latency</h2>
+                <div class="text-4xl font-light text-white" id="metric-latency">42ms</div>
+                <div class="text-xs text-slate-500 mt-2">Simulated frontend telemetry</div>
+            </div>
+            <div class="metric-card bg-slate-800 p-6 rounded-lg border border-slate-700">
+                <h2 class="text-sm text-slate-400 uppercase tracking-wider mb-2">Agent Activity</h2>
+                <div class="text-4xl font-light text-white" id="metric-agents">Idle</div>
+                <div class="text-xs text-slate-500 mt-2">Cycle simulates 16s task</div>
+            </div>
+        </main>
+        <section class="mt-10 bg-slate-800 p-6 rounded-lg border border-slate-700">
+            <h2 class="text-xl font-semibold mb-4 text-slate-200">Agent Cycle Controls</h2>
+            <button id="start-cycle-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded font-medium transition-colors">Initialize Agent Cycle</button>
+            <div id="cycle-status" class="mt-4 text-sm text-slate-400 hidden">Cycle in progress... <span id="cycle-timer" class="text-emerald-400 font-mono">0s</span></div>
+            <div id="cycle-complete" class="mt-4 text-sm text-emerald-400 hidden font-bold">Agent Cycle Completed Successfully.</div>
+        </section>
+    </div>
+    <script>
+        // Prototype-only values. No live business or agent telemetry is connected.
+        setInterval(() => {
+            const roi = (Math.random() * 1000 + 5000).toFixed(2);
+            const latency = Math.floor(Math.random() * 30 + 20);
+            document.getElementById('metric-roi').innerText = `$${roi}`;
+            document.getElementById('metric-latency').innerText = `${latency}ms`;
+        }, 3000);
+        document.getElementById('start-cycle-btn').addEventListener('click', () => {
+            const btn = document.getElementById('start-cycle-btn');
+            const status = document.getElementById('cycle-status');
+            const complete = document.getElementById('cycle-complete');
+            const timerDisplay = document.getElementById('cycle-timer');
+            const agentMetric = document.getElementById('metric-agents');
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            status.classList.remove('hidden');
+            complete.classList.add('hidden');
+            agentMetric.innerText = 'Active';
+            agentMetric.classList.add('text-emerald-400');
+            let seconds = 0;
+            const timer = setInterval(() => {
+                seconds++;
+                timerDisplay.innerText = `${seconds}s`;
+                if (seconds >= 16) {
+                    clearInterval(timer);
+                    status.classList.add('hidden');
+                    complete.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    agentMetric.innerText = 'Idle';
+                    agentMetric.classList.remove('text-emerald-400');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
