@@ -3,7 +3,7 @@
 This repository now contains two separate operational components:
 
 - **Ops Suite dashboard:** served from `/ops-suite/`. It is a UI prototype. ROI, latency and agent activity are simulated and must not be treated as live business metrics.
-- **DegenDev Dispatch Engine:** the safe-mode implementation kit is stored under `degendev-dispatch/`. Review its README, environment guide and operations checklist before importing workflows or applying SQL.
+- **DegenDev Dispatch Engine:** the supplied safe-mode implementation kit is stored at `degendev-dispatch/degendev-dispatch-v1-complete-kit.zip`, with extraction and validation instructions in `degendev-dispatch/README.md`. Review the bundled environment guide and operations checklist before importing workflows or applying SQL.
 
 ## Safety boundary
 
