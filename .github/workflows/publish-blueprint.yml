@@ -1,0 +1,89 @@
+name: Publish the Claude Operator Blueprint
+
+# Takes the $47 Blueprint live on Gumroad, behind the four-gate check.
+# scripts/verify-launch-hardened.sh requires the product to be published, so
+# it runs twice: with PRE_PUBLISH=1 before (every gate except "published"),
+# then in full after. If the full run fails, a product this run published is
+# unpublished again, so a failed launch never stays half-live.
+#
+# Manual only: publishing a paid product is a one-off decision, not something a
+# push or a schedule should do.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "publish" to take the $47 Blueprint live'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: gumroad-blueprint-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: inputs.confirm == 'publish'
+    runs-on: ubuntu-latest
+    env:
+      GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SLUG: claude-operator-blueprint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install --yes jq
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.x"
+
+      - name: Install the Gumroad CLI
+        run: |
+          go install github.com/antiwork/gumroad-cli/cmd/gumroad@v0.20261028.0
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Gates before publishing
+        run: |
+          [ -n "$GUMROAD_ACCESS_TOKEN" ] || { echo "::error::Repository secret GUMROAD_ACCESS_TOKEN is missing."; exit 1; }
+          PRE_PUBLISH=1 ./scripts/verify-launch-hardened.sh
+
+      - name: Publish
+        id: publish
+        run: |
+          product="$(gumroad products list --all --json --no-input --quiet \
+            | jq -c --arg slug "$SLUG" '[.products[] | select(.deleted != true) | select(
+                .custom_permalink == $slug or ((.short_url // "") | endswith("/l/" + $slug)) or ((.url // "") | endswith("/l/" + $slug))
+              )]')"
+          [ "$(jq 'length' <<<"$product")" -eq 1 ] || { echo "::error::Expected exactly one product for $SLUG."; exit 1; }
+          id="$(jq -r '.[0].id' <<<"$product")"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+          if [ "$(jq -r '.[0].published' <<<"$product")" = "true" ]; then
+            echo "Already published; nothing to change."
+            echo "published_now=false" >> "$GITHUB_OUTPUT"
+          else
+            gumroad products publish "$id" --json --no-input --quiet >/dev/null
+            echo "Published $SLUG."
+            echo "published_now=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: All four gates
+        id: verify
+        run: |
+          # The public product page can lag the publish call by a few seconds.
+          for attempt in 1 2 3 4 5 6; do
+            code="$(curl --silent --output /dev/null --write-out '%{http_code}' --location "https://digitalrena1ssance.gumroad.com/l/$SLUG")"
+            [ "$code" = "200" ] && break
+            sleep 10
+          done
+          ./scripts/verify-launch-hardened.sh
+
+      - name: Roll back a failed launch
+        if: failure() && steps.publish.outputs.published_now == 'true'
+        run: |
+          gumroad products unpublish "${{ steps.publish.outputs.id }}" --json --no-input --quiet --yes >/dev/null
+          echo "::error::The four-gate check failed after publishing, so $SLUG has been unpublished again."

@@ -9,6 +9,10 @@ EXPECTED_PRICE_CENTS=4700
 PROFILE_URL="https://digitalrena1ssance.gumroad.com"
 PRODUCT_URL="${PROFILE_URL}/l/${EXPECTED_SLUG}"
 API_BASE="https://api.gumroad.com/v2"
+# PRE_PUBLISH=1 runs every gate except "the product is published" and its
+# public route, for use immediately before publishing it
+# (.github/workflows/publish-blueprint.yml). Unset, the script is unchanged.
+PRE_PUBLISH="${PRE_PUBLISH:-0}"
 
 fail() { printf 'FAILED: %s\n' "$*" >&2; exit 1; }
 need() { command -v "$1" >/dev/null 2>&1 || fail "Required command not found: $1"; }
@@ -90,9 +94,13 @@ DELETED_STATE="$(printf '%s' "$PRODUCT" | jq -r '.deleted // false')"
 [ "$LIVE_PRICE" -eq "$EXPECTED_PRICE_CENTS" ] || fail "Expected 4700 cents; API returned $LIVE_PRICE."
 [ -n "$LIVE_CURRENCY" ] || fail "Product currency field is missing from Gumroad API response."
 [ "$LIVE_CURRENCY" = "USD" ] || fail "Expected USD price currency; API returned $LIVE_CURRENCY."
-[ "$PUBLISHED_STATE" = "true" ] || fail "Product is not published."
+[ "$PRE_PUBLISH" = "1" ] || [ "$PUBLISHED_STATE" = "true" ] || fail "Product is not published."
 [ "$DELETED_STATE" != "true" ] || fail "Product is marked deleted."
-printf '%s\n' 'PASSED: Exactly one product matched, priced at USD 47.00 and published.'
+if [ "$PRE_PUBLISH" = "1" ]; then
+  printf 'PASSED: Exactly one product matched, priced at USD 47.00 (published=%s; not required before publishing).\n' "$PUBLISHED_STATE"
+else
+  printf '%s\n' 'PASSED: Exactly one product matched, priced at USD 47.00 and published.'
+fi
 unset MATCHED_PRODUCTS PRODUCT
 
 # 4. Check public route status. HTTP 200 alone does not verify checkout completion.
@@ -102,6 +110,11 @@ PROFILE_HTTP="$(curl --silent --show-error --output /dev/null --write-out '%{htt
 PRODUCT_HTTP="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' --location "$PRODUCT_URL")" \
   || fail "Could not request the public product page."
 [ "$PROFILE_HTTP" = "200" ] || fail "Profile route returned HTTP $PROFILE_HTTP."
+if [ "$PRE_PUBLISH" = "1" ]; then
+  printf 'Product route returned HTTP %s (not required before publishing).\n' "$PRODUCT_HTTP"
+  printf '%s\n' 'PRE-PUBLISH CHECKS PASSED: gates 1, 2 and 3 (except published) and the profile route.'
+  exit 0
+fi
 [ "$PRODUCT_HTTP" = "200" ] || fail "Product route returned HTTP $PRODUCT_HTTP."
 
 printf '%s\n' '================================================='

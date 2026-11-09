@@ -1,0 +1,17 @@
+{
+  "note": "Appended in this order to every post in content/queue/. Copy is the V3 brief's as written. As of 9 Nov 2026 the free Problem Finder checklist and the $7 Micro-Manual do not exist on the Gumroad store or site, and the $47 Claude Operator Blueprint has not passed scripts/verify-launch-hardened.sh. Fix or remove a tier before switching DISPATCH_MODE to queue.",
+  "tiers": [
+    {
+      "id": "freebie",
+      "text": "---\nGet the free 10-Minute Problem Finder checklist at digitalrena1ssance.gumroad.com"
+    },
+    {
+      "id": "entry",
+      "text": "Ready to scale? Access the $7 Micro-Manual for complete framework execution."
+    },
+    {
+      "id": "flagship",
+      "text": "Deploy the full system: The Claude Operator Blueprint ($47). https://digitalrena1ssance.gumroad.com/l/claude-operator-blueprint"
+    }
+  ]
+}
