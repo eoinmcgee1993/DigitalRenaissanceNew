@@ -1,0 +1,73 @@
+name: V3 Pipeline (Vercel + Buffer dispatch)
+
+# Deploys are not done here. The Vercel project is linked to this repository,
+# so Vercel's Git integration builds every push (main goes to production, other
+# branches get previews). Deploying again from Actions would ship each commit
+# twice. `npm run deploy:prebuilt` is the manual fallback if the integration is
+# ever unavailable.
+#
+# This workflow gates the deploy (pre-flight) and sends queued posts to Buffer.
+# The schedule only retries posts a previous run could not send; queue files
+# already in content/dispatch-ledger.json are never sent again.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    name: Pre-flight
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/v3-preflight.js
+
+  dispatch:
+    name: Buffer dispatch
+    needs: preflight
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # Two runs at once could both see a post as unsent and both send it.
+    concurrency:
+      group: buffer-dispatch
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Send queued posts
+        env:
+          BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+          BUFFER_CHANNEL_IDS: ${{ vars.BUFFER_CHANNEL_IDS }}
+          # Unset means "draft". Set the repository variable to "queue" to post without approval.
+          DISPATCH_MODE: ${{ vars.DISPATCH_MODE }}
+        run: node scripts/dispatch-buffer.js
+      # Runs even when some sends failed, so the ones that succeeded are recorded
+      # and not sent again.
+      - name: Record what was sent
+        if: always()
+        run: |
+          if git diff --quiet -- content/dispatch-ledger.json; then
+            echo "Ledger unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/dispatch-ledger.json
+          git commit -m "Record Buffer dispatch results"
+          git push origin HEAD:main

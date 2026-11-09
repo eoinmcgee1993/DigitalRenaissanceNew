@@ -1,0 +1,13 @@
+{
+  "name": "digital-renaissance-site",
+  "private": true,
+  "description": "Scripts only. The site in site/ is plain HTML with no build step.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "preflight": "node scripts/v3-preflight.js",
+    "dispatch": "node scripts/dispatch-buffer.js",
+    "deploy:prebuilt": "vercel build --prod && vercel deploy --prebuilt --prod"
+  }
+}

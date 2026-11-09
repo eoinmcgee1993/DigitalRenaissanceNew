@@ -38,6 +38,6 @@ Substack publishing is not currently connected. The system therefore prepares pu
 ## Future integrations
 - Substack or email publisher connector when available.
 - Canva for visual derivatives.
-- Web publishing through Vercel/Netlify.
+- Web publishing through Vercel.
 - Supabase for editorial state and analytics.
 - GitHub as canonical versioned archive.
