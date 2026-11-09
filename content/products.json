@@ -1,0 +1,20 @@
+{
+  "note": "Funnel products scripts/publish-gumroad.js keeps on Gumroad. A missing product is created as an unpublished draft with no file; upload its file in Gumroad (never here: this repository is public), then set publish to true. Names, prices and summaries come from the V3 brief; replace the summaries with your own copy. The $47 Blueprint is published by .github/workflows/publish-blueprint.yml instead.",
+  "products": [
+    {
+      "permalink": "problem-finder",
+      "name": "10-Minute Problem Finder",
+      "price": 0,
+      "pay_what_you_want": true,
+      "summary": "A free checklist for finding a problem worth building for in ten minutes.",
+      "publish": false
+    },
+    {
+      "permalink": "micro-manual",
+      "name": "Micro-Manual",
+      "price": 7,
+      "summary": "The complete framework, step by step.",
+      "publish": false
+    }
+  ]
+}

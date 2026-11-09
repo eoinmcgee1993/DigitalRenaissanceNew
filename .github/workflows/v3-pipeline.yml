@@ -6,7 +6,8 @@ name: V3 Pipeline (Vercel + Buffer dispatch)
 # twice. `npm run deploy:prebuilt` is the manual fallback if the integration is
 # ever unavailable.
 #
-# This workflow gates the deploy (pre-flight) and sends queued posts to Buffer.
+# This workflow gates the deploy (pre-flight), sends queued posts to Buffer and
+# to the Gumroad audience, and keeps the funnel products on Gumroad.
 # The schedule only retries posts a previous run could not send; queue files
 # already in content/dispatch-ledger.json are never sent again.
 on:
@@ -57,6 +58,29 @@ jobs:
           # Unset means "draft". Set the repository variable to "queue" to post without approval.
           DISPATCH_MODE: ${{ vars.DISPATCH_MODE }}
         run: node scripts/dispatch-buffer.js
+      # Gumroad goes through the gumroad CLI, the same tool its MCP connector
+      # wraps. It runs even when a Buffer send failed: the two are independent.
+      - uses: actions/setup-go@v5
+        if: ${{ !cancelled() }}
+        with:
+          go-version: "1.25.x"
+      - name: Install the Gumroad CLI
+        if: ${{ !cancelled() }}
+        run: |
+          go install github.com/antiwork/gumroad-cli/cmd/gumroad@v0.20261028.0
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Email queued posts to the Gumroad audience
+        if: ${{ !cancelled() }}
+        env:
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+          DISPATCH_MODE: ${{ vars.DISPATCH_MODE }}
+          GUMROAD_EMAIL_AUDIENCE: ${{ vars.GUMROAD_EMAIL_AUDIENCE }}
+        run: node scripts/publish-gumroad.js posts
+      - name: Keep the funnel products on Gumroad
+        if: ${{ !cancelled() }}
+        env:
+          GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
+        run: node scripts/publish-gumroad.js products
       # Runs even when some sends failed, so the ones that succeeded are recorded
       # and not sent again.
       - name: Record what was sent

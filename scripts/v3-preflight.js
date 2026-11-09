@@ -75,6 +75,18 @@ try {
 } catch (err) {
   fail(`content/funnel.json is missing or invalid: ${err.message}`);
 }
+const productsPath = path.join(root, 'content', 'products.json');
+try {
+  const { products } = JSON.parse(fs.readFileSync(productsPath, 'utf8'));
+  if (!Array.isArray(products)) fail('content/products.json needs a "products" array.');
+  for (const p of products || []) {
+    if (!/^[a-z0-9-]+$/.test(p.permalink || '') || !p.name || !(Number(p.price) >= 0)) {
+      fail(`content/products.json: every product needs a lowercase permalink, a name and a price (${JSON.stringify(p)}).`);
+    }
+  }
+} catch (err) {
+  fail(`content/products.json is missing or invalid: ${err.message}`);
+}
 const ledgerPath = path.join(root, 'content', 'dispatch-ledger.json');
 try {
   JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
